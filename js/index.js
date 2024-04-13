@@ -24,8 +24,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Configure body-parser middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-//configuracion del cors
+//configuracion inicial 
 app.use(cors());
+
 app.use(morgan('dev'));
 app.use(express.json());
 
@@ -41,7 +42,7 @@ const pool = new Pool({
 
 
 
-
+//☺
 // Creación de las tablas en la base de datos al iniciar el servidor
 
 async function crearTablas() {
@@ -82,9 +83,9 @@ app.get("/usuarios/:email", obtenerUsuarioPorId);
 app.put("/usuarios/:email", actualizarUsuario);
 app.delete("/usuarios/:email", eliminarUsuario);
 
-//Requerimentos para el hash
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+// //Requerimentos para el hash
+// const bcrypt = require('bcrypt');
+// const saltRounds = 10;
 
 
 // ♣ 
@@ -107,13 +108,13 @@ async function crearUsuario(req, res) {
       return res.status(400).send("Email already exists");
     }
 
-    // Hash de la contraseña
-    const hashedPassword = await bcrypt.hash(contrasena, saltRounds);
+    //Hash de la contraseña
+    // const hashedPassword = await bcrypt.hash(contrasena, saltRounds);
 
     const result = await client.query(
       `INSERT INTO usuarios (usuario, email, contrasena) 
        VALUES ($1, $2, $3) RETURNING *`,
-      [usuario, email, hashedPassword,] // Usar la contraseña hasheada en lugar de la original
+      [usuario, email, contrasena,] // Usar la contraseña hasheada en lugar de la original
     );
     const newUser = result.rows[0];
     // Redirigir al usuario a la página de perfil
@@ -131,33 +132,58 @@ app.post("/login", iniciarSesion);
 
 
 //comparar contraseña hasheada para que el login sea exitoso
+// async function iniciarSesion(req, res) {
+//   try {
+//     const { email, contrasena } = req.body;
+
+//     // Buscar el usuario por su correo electrónico en la base de datos
+//     const user = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
+
+//     // Si el usuario no existe
+//     if (user.rows.length === 0) {
+//       return res.status(401).send("Usuario no encontrado");
+//     }
+
+//     // Comparar la contraseña hasheada almacenada con la contraseña proporcionada por el usuario
+//     const hashedPassword = user.rows[0].contrasena;
+//     const match = await bcrypt.compare(contrasena, hashedPassword);
+
+//     // Si las contraseñas no coinciden
+//     if (!match) {
+//       return res.status(401).send("Contraseña incorrecta");
+//     }
+
+//     // Si las contraseñas coinciden, el usuario está autenticado
+//     return res.status(201).json({ res: 'ok', ms: "Credenciales inválidas", data: user.rows[0].email });
+
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send("Error de autenticación");
+//   }
+// }
+
 async function iniciarSesion(req, res) {
   try {
     const { email, contrasena } = req.body;
-
-    // Buscar el usuario por su correo electrónico en la base de datos
-    const user = await pool.query("SELECT * FROM usuarios WHERE email = $1", [email]);
-
-    // Si el usuario no existe
-    if (user.rows.length === 0) {
-      return res.status(401).send("Usuario no encontrado");
+    if (!email || !contrasena) {
+      return res.status(400).send("Correo y contraseña son requeridos");
     }
 
-    // Comparar la contraseña hasheada almacenada con la contraseña proporcionada por el usuario
-    const hashedPassword = user.rows[0].contrasena;
-    const match = await bcrypt.compare(contrasena, hashedPassword);
+    const result = await pool.query(
+      "SELECT * FROM usuarios WHERE email = $1 AND contrasena = $2",
+      [email, contrasena]
+    );
 
-    // Si las contraseñas no coinciden
-    if (!match) {
-      return res.status(401).send("Contraseña incorrecta");
+    if (result.rows.length === 0) {
+      return res.status(401).send("Credenciales inválidas");
     }
 
-    // Si las contraseñas coinciden, el usuario está autenticado
-    return res.status(201).json({ res: 'ok', ms: "Credenciales inválidas", data: user.rows[0].email });
+    // Si las credenciales son válidas, redirige al usuario al perfil.html
+    res.json({"response": "ok"});
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error de autenticación");
+  } catch (error) {
+    console.error("Error al iniciar sesión:", error);
+    res.status(500).send("Error al iniciar sesión");
   }
 }
 

@@ -51,3 +51,4 @@ let myChart;
     if (idpGuardado) {
       obtenerDatos(idpGuardado);
     }
+    

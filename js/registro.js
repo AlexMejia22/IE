@@ -28,5 +28,5 @@ document.getElementById('reg').addEventListener('submit', function (event) {
 
   });
 
-
+  
  
