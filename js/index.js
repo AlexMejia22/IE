@@ -13,11 +13,16 @@ dotenv.config();
 
 
 // servicio de archivos estaticos 
+app.use(express.static(path.join(__dirname, 'public' )));
+app.use('/css', express.static(path.join(__dirname, 'css')));
+app.use('/js', express.static(path.join(__dirname, 'js')));
+app.use('/img', express.static(path.join(__dirname, 'img')));
 
-app.use('/CSS', express.static(path.join(__dirname, 'CSS')));
-app.use('/JS', express.static(path.join(__dirname, 'JS')));
-app.use('/IMG', express.static(path.join(__dirname, 'IMG')));
-app.use(express.static(path.join(__dirname, 'public')));
+
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname,'./public/index.html'));
+});
 
 
 
