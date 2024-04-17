@@ -19,7 +19,7 @@ document.getElementById('reg').addEventListener('submit', function (event) {
       if (res.response == 'ok') {
         // Redirigir al usuario al login.html
         localStorage.setItem('userId', String(res.data.email));
-        window.location.href = "login.html";
+        window.location.href = "\login.html";
       } 
     }).catch((error) => {
       console.error("Error al registrarse", error);

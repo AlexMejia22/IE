@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
         .then(data => {
             console.log('Encuesta enviada correctamente:', data);
             localStorage.setItem('idpi', data.data.idp); // Almacenar el IDP en el localStorage
-            window.location.href = "/grafico.html";
+            window.location.href = "\grafico.html";
         })
         .catch(error => {
             console.error('Error al enviar la encuesta:', error);

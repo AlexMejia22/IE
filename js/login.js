@@ -26,7 +26,7 @@ document.getElementById('loginForm').addEventListener('submit', async function (
       
       localStorage.setItem('userId', String(response.data));
       // Redirigir al usuario al perfil.html
-      window.location.href = "/envio.html";
+      window.location.href = "\envio.html";
     }
   }).catch((error) => {
     console.error("Error al iniciar sesión:", error);
